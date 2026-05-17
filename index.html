@@ -3,38 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numble - Welcome</title>
+    <title>Numble - Number Guessing Game</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
         }
+        
         .container {
-            text-align: center;
             background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
         }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
         h1 {
             color: #333;
-            margin: 0;
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
-        p {
+        
+        .subtitle {
             color: #666;
-            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        
+        .game-info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .difficulty-selector {
+            margin-bottom: 20px;
+        }
+        
+        .difficulty-selector label {
+            color: #333;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .difficulty-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .difficulty-btn {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .difficulty-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .game-section {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            color: #333;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit {
+            background: #667eea;
+            color: white;
+            grid-column: 1;
+        }
+        
+        .btn-submit:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-reset {
+            background: #ff6b6b;
+            color: white;
+            grid-column: 2;
+        }
+        
+        .btn-reset:hover {
+            background: #ee5a52;
+            transform: translateY(-2px);
+        }
+        
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.hot {
+            background: #ffe0e0;
+            color: #c92a2a;
+            border-left: 4px solid #c92a2a;
+        }
+        
+        .feedback.cold {
+            background: #e0f0ff;
+            color: #0066cc;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .feedback.correct {
+            background: #d3f9d8;
+            color: #2f9e44;
+            border-left: 4px solid #2f9e44;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            color: #667eea;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        
+        .leaderboard {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        
+        .leaderboard h2 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .leaderboard-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .leaderboard-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .leaderboard-rank {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+        
+        .leaderboard-info {
+            flex: 1;
+        }
+        
+        .leaderboard-name {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .leaderboard-score {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .difficulty-buttons {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎉 Welcome to Numble</h1>
-        <p>Your GitHub Pages site is now live!</p>
+        <div class="header">
+            <h1>🎮 Numble</h1>
+            <p class="subtitle">Number Guessing Game with Difficulty Levels</p>
+        </div>
+        
+        <div class="game-info">
+            <p>📝 I'm thinking of a number. Can you guess it? Get hints with HOT/COLD feedback!</p>
+        </div>
+        
+        <div class="difficulty-selector">
+            <label>Select Difficulty Level:</label>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn active" data-difficulty="easy">Easy (1-50)</button>
+                <button class="difficulty-btn" data-difficulty="medium">Medium (1-100)</button>
+                <button class="difficulty-btn" data-difficulty="hard">Hard (1-500)</button>
+            </div>
+        </div>
+        
+        <div class="game-section">
+            <label for="guessInput">Your Guess:</label>
+            <input type="number" id="guessInput" placeholder="Enter your guess..." min="1">
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-submit" onclick="submitGuess()">Submit Guess</button>
+            <button class="btn-reset" onclick="resetGame()">New Game</button>
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Attempts</div>
+                <div class="stat-value" id="attempts">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Streak</div>
+                <div class="stat-value" id="streak">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Best</div>
+                <div class="stat-value" id="best">-</div>
+            </div>
+        </div>
+        
+        <div class="leaderboard">
+            <h2>🏆 Leaderboard</h2>
+            <div class="leaderboard-list" id="leaderboard">
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">1</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">Champion</div>
+                    </div>
+                    <div class="leaderboard-score">Play to compete!</div>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <script>
+        let secretNumber = 0;
+        let attempts = 0;
+        let streak = 0;
+        let bestScore = null;
+        let difficulty = 'easy';
+        let gameActive = true;
+        let leaderboard = JSON.parse(localStorage.getItem('numbleLeaderboard')) || [];
+        
+        const difficultyRanges = {
+            easy: 50,
+            medium: 100,
+            hard: 500
+        };
+        
+        function startNewGame() {
+            const max = difficultyRanges[difficulty];
+            secretNumber = Math.floor(Math.random() * max) + 1;
+            attempts = 0;
+            gameActive = true;
+            updateStats();
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').focus();
+        }
+        
+        function submitGuess() {
+            if (!gameActive) return;
+            
+            const guess = parseInt(document.getElementById('guessInput').value);
+            const max = difficultyRanges[difficulty];
+            
+            if (isNaN(guess) || guess < 1 || guess > max) {
+                showFeedback(`Please enter a number between 1 and ${max}`, 'cold');
+                return;
+            }
+            
+            attempts++;
+            
+            const feedbackEl = document.getElementById('feedback');
+            
+            if (guess === secretNumber) {
+                showFeedback(`🎉 Correct! You guessed it in ${attempts} attempts!`, 'correct');
+                streak++;
+                if (!bestScore || attempts < bestScore) {
+                    bestScore = attempts;
+                }
+                addToLeaderboard(difficulty, attempts);
+                gameActive = false;
+                updateStats();
+            } else if (Math.abs(guess - secretNumber) <= 10) {
+                showFeedback('🔥 HOT - You\'re very close!', 'hot');
+            } else if (Math.abs(guess - secretNumber) <= 30) {
+                showFeedback('🌡️ WARM - Getting closer!', 'hot');
+            } else {
+                showFeedback('❄️ COLD - You\'re far away', 'cold');
+            }
+            
+            updateStats();
+        }
+        
+        function showFeedback(message, type) {
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.textContent = message;
+            feedbackEl.className = `feedback show ${type}`;
+        }
+        
+        function resetGame() {
+            streak = 0;
+            startNewGame();
+        }
+        
+        function updateStats() {
+            document.getElementById('attempts').textContent = attempts;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('best').textContent = bestScore ? bestScore : '-';
+        }
+        
+        function addToLeaderboard(diff, score) {
+            leaderboard.push({ difficulty: diff, score: score, date: new Date().toLocaleDateString() });
+            leaderboard.sort((a, b) => a.score - b.score);
+            leaderboard = leaderboard.slice(0, 10);
+            localStorage.setItem('numbleLeaderboard', JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+        
+        function renderLeaderboard() {
+            const leaderboardEl = document.getElementById('leaderboard');
+            if (leaderboard.length === 0) {
+                leaderboardEl.innerHTML = '<div class="leaderboard-item"><div style="text-align: center; width: 100%; color: #999;">No scores yet. Start playing!</div></div>';
+                return;
+            }
+            
+            leaderboardEl.innerHTML = leaderboard.map((entry, index) => `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">${index + 1}</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">${entry.difficulty.toUpperCase()}</div>
+                        <div style="color: #999; font-size: 0.85em;">${entry.date}</div>
+                    </div>
+                    <div class="leaderboard-score">${entry.score} guesses</div>
+                </div>
+            `).join('');
+        }
+        
+        // Difficulty selector
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                difficulty = this.dataset.difficulty;
+                startNewGame();
+            });
+        });
+        
+        // Allow Enter key to submit
+        document.getElementById('guessInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') submitGuess();
+        });
+        
+        // Initialize
+        renderLeaderboard();
+        startNewGame();
+    </script>
 </body>
 </html>
